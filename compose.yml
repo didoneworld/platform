@@ -2,43 +2,31 @@ name: did-one-world-platform
 
 services:
   did-registry:
-    image: node:20-alpine
-    working_dir: /app
-    command: ["node", "api/index.js"]
+    build:
+      context: .
+      dockerfile: Dockerfile.registry
     ports:
       - "8000:8000"
-    volumes:
-      - ./api:/app
     environment:
       - PORT=8000
-    networks:
-      - platform-network
 
   vc-issuer:
-    image: node:20-alpine
-    working_dir: /app
-    command: ["node", "api/credentials/index.js"]
+    build:
+      context: .
+      dockerfile: Dockerfile.vc
     ports:
       - "8001:8001"
-    volumes:
-      - ./api:/app
     environment:
       - PORT=8001
-    networks:
-      - platform-network
 
   wallet:
-    image: node:20-alpine
-    working_dir: /app
-    command: ["node", "api/wallet.js"]
+    build:
+      context: .
+      dockerfile: Dockerfile.wallet
     ports:
       - "3000:3000"
-    volumes:
-      - ./api:/app
     environment:
       - PORT=3000
-    networks:
-      - platform-network
 
   admin-ui:
     image: node:20-alpine
@@ -48,9 +36,3 @@ services:
       - "3001:3000"
     volumes:
       - ./ui/out:/app
-    networks:
-      - platform-network
-
-networks:
-  platform-network:
-    driver: bridge
