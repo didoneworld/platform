@@ -1,22 +1,6 @@
-version: '3.8'
-
 name: did-one-world-platform
 
 services:
-  caddy:
-    image: caddy:2-alpine
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
-      - caddy_data:/data
-      - caddy_config:/config
-    environment:
-      - EMAIL=${ACME_EMAIL:-admin@didone.world}
-    networks:
-      - platform-network
-
   did-registry:
     image: node:20-alpine
     working_dir: /app
@@ -66,7 +50,3 @@ services:
 networks:
   platform-network:
     driver: bridge
-
-volumes:
-  caddy_data:
-  caddy_config:
