@@ -6,6 +6,9 @@ ui/.next/
 ui/out/
 node_modules/
 
+# Docs (GitHub Pages)
+!docs/
+
 # Docker
 *.tar
 
