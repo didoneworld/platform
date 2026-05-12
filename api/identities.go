@@ -15,8 +15,8 @@ import (
 "github.com/google/uuid"
 )
 
-// W3C DID Core v1.1 (2024)
-// https://www.w3.org/TR/did-core-2024/
+// W3C DID Core v1.0 (W3C Recommendation)
+// https://www.w3.org/TR/did-core/
 
 // DIDDocument (Section 5.2)
 type DIDDocument struct {
@@ -293,7 +293,7 @@ return nil
 }
 
 func main() {
-log.Println("DID Registry (W3C DID Core 2024) on :8000")
+log.Println("DID Registry (W3C DID Core v1.0 (W3C Recommendation) on :8000")
 
 http.HandleFunc("/health", healthHandler)
 http.HandleFunc("/v1/identities", listIdentitiesHandler)
