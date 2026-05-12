@@ -1,70 +1,79 @@
 # DID One World Platform
 
-Unified identity platform combining Agent-DID, verifiable-credential, and idwallet.
+> Unified identity platform for humans, agents, APIs, skills, and things
+
+## Services
+
+| Service | Port | UI |
+|---------|------|-----|
+| [Agent-DID](https://github.com/didoneworld/Agent-DID) | 8000 | Admin Console |
+| [verifiable-credential](https://github.com/didoneworld/verifiable-credential) | 8001-4 | Landing |
+| [idwallet](https://github.com/didoneworld/idwallet) | 3000 | Wallet |
 
 ## Quick Start
 
 ```bash
-# Clone with submodules
-git clone --recurse-submodules https://github.com/didoneworld/platform.git
+# Clone
+git clone https://github.com/didoneworld/platform.git
 cd platform
 
-# Or initialize submodules
-git submodule update --init --recursive
-```
+# Configure
+cp .env.example .env
 
-## Build & Run
-
-```bash
-# Build all images
-docker-compose build
-
-# Start platform
+# Run
 docker-compose up -d
 ```
 
 ## Architecture
 
 ```
-┌─────────────┐     ┌──────────────────┐     ┌────────────────┐
-│   idwallet  │────▶│    Agent-DID     │────▶│ verifiable-cred│
-│  (wallet)   │     │ (identity reg)   │     │ (credentials)  │
-└─────────────┘     └──────────────────┘     └────────────────┘
-       Port 3000         Port 8000              8001-8004
+┌─────────────────────────────────────────────────────────────┐
+│                  Platform UI (port 80/3000)          │
+├─────────────────────────────────────────────────────────────┤
+│  ┌──────────┐  ┌──────────┐  ┌──────────────────────┐  │
+│  │Agent-DID │  │VC Issuer│  │     ID Wallet       │  │
+│  │ Admin   │  │        │  │                    │  │
+│  └──────────┘  └──────────┘  └──────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-## Services
-
-| Service | Port | Description |
-|---------|------|-------------|
-| idwallet | 3000 | Frontend wallet UI |
-| agent-did | 8000 | Agent identity registry |
-| vc-issuer | 8001 | Credential issuer |
-| vc-verifier | 8004 | Credential verifier |
-| did-resolver | 8002 | DID resolver |
-| vc-revocation | 8003 | Status list/revocation |
-| gateway | 80/443 | API gateway |
-
-## Environment
+## Environment Variables
 
 ```bash
-cp .env.example .env
-# Edit .env with your secrets
+# Required
+DB_PASSWORD=          # PostgreSQL password
+SESSION_SIGNING_SECRET=  # Session signing key
+
+# URLs (auto-configured in compose)
+AGENT_DID_URL=http://agent-did:8000
+VC_ISSUER_URL=http://vc-issuer:8001
+VC_VERIFIER_URL=http://vc-verifier:8004
 ```
+
+## API Endpoints
+
+### Agent-DID (port 8000)
+- `POST /v1/agents` - Create agent
+- `GET /v1/agents` - List agents
+- `GET /health` - Health check
+- `/.well-known/openid-configuration` - OIDC discovery
+
+### Verifiable Credential (ports 8001-8004)
+- `POST /v1/credentials/issue` - Issue VC
+- `POST /v1/credentials/verify` - Verify VC
+- `POST /v1/credentials/revoke` - Revoke VC
 
 ## Development
 
 ```bash
-# Build Agent-DID
+# Individual services
 cd repos/Agent-DID && docker build -t didoneworld/agent-did .
-
-# Build VC services
-cd repos/verifiable-credential
 docker build -t didoneworld/vc-issuer -f services/issuer-service/Dockerfile .
-docker build -t didoneworld/vc-verifier -f services/verifier-service/Dockerfile .
-docker build -t didoneworld/did-resolver -f services/did-resolver/Dockerfile .
-docker build -t didoneworld/vc-revocation -f services/revocation-service/Dockerfile .
-
-# Build idwallet
-cd repos/idwallet && docker build -t didoneworld/idwallet .
 ```
+
+## Repositories
+
+- [didoneworld/platform](https://github.com/didoneworld/platform) - Platform orchestration
+- [didoneworld/Agent-DID](https://github.com/didoneworld/Agent-DID) - Agent identity registry
+- [didoneworld/verifiable-credential](https://github.com/didoneworld/verifiable-credential) - VC services
+- [didoneworld/idwallet](https://github.com/didoneworld/idwallet) - Wallet SDK
