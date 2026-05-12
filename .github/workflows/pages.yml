@@ -3,23 +3,36 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - '**.md'
+      - '**.txt'
+      - 'docs/**'
   workflow_dispatch:
 
+# Security: Limit permissions
 permissions:
   contents: read
   pages: write
   id-token: write
 
+# Prevent concurrent builds
 concurrency:
   group: "pages"
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            docs
+            ui
+            .github
+          sparse-checkout-cone-mode: false
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
