@@ -889,6 +889,15 @@ Delegation is core to the platform.
 
 # 14. Production Platform Modules
 
+## Architecture: Composed from DID One World Repositories
+
+The DID One World platform is built by integrating these core repositories:
+
+| Repository | Provides | Integration |
+|------------|-----------|--------------|
+| [Agent-DID](https://github.com/didoneworld/Agent-DID) | Agent ID registry, blueprints, lifecycle, OIDC/SAML | Core identity management |
+| [verifiable-credential](https://github.com/didoneworld/verifiable-credential) | VC issuer, verifier, revocation, status lists | Credential layer |
+| [idwallet](https://github.com/didoneworld/idwallet) | Wallet SDK, crypto, storage, VP presentation | Wallet infrastructure |
 
 ## Required Modules
 
