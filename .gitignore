@@ -2,6 +2,9 @@
 .env
 data/
 logs/
+ui/.next/
+ui/out/
+node_modules/
 
 # Docker
 *.tar
