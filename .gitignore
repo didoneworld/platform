@@ -1,0 +1,11 @@
+# Platform
+.env
+data/
+logs/
+
+# Docker
+*.tar
+
+# OS
+.DS_Store
+Thumbs.db
