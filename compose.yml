@@ -3,149 +3,55 @@ version: '3.8'
 name: did-one-world-platform
 
 services:
-  # Agent Identity Registry (from Agent-DID)
-  agent-did:
-    image: didoneworld/agent-did:latest
+  did-registry:
     build:
-      context: ./repos/Agent-DID
+      context: ./api
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
     environment:
-      - ENV=production
-      - DATABASE_URL=postgresql://postgres:${DB_PASSWORD}@db:5432/didoneworld
-      - SESSION_SIGNING_SECRET=${SESSION_SIGNING_SECRET}
-      - REDIS_URL=redis://redis:6379
-    depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_started
-    healthcheck:
+      - PORT=8000
+    Healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
-    networks:
-      - platform-network
 
-  # Verifiable Credential Services (from verifiable-credential)
   vc-issuer:
-    image: didoneworld/vc-issuer:latest
     build:
-      context: ./repos/verifiable-credential
-      dockerfile: services/issuer-service/Dockerfile
+      context: ./api/credentials
+      dockerfile: Dockerfile
     ports:
       - "8001:8001"
-    environment:
-      - VC_SERVICE_URL=http://vc-issuer:8001
-      - STATUS_LIST_URL=http://vc-revocation:8003
-      - DID_RESOLVER_URL=http://did-resolver:8002
     depends_on:
-      - did-resolver
-      - vc-revocation
-    networks:
-      - platform-network
-
-  vc-verifier:
-    image: didoneworld/vc-verifier:latest
-    build:
-      context: ./repos/verifiable-credential
-      dockerfile: services/verifier-service/Dockerfile
-    ports:
-      - "8004:8004"
+      - did-registry
     environment:
-      - VC_SERVICE_URL=http://vc-issuer:8001
-      - STATUS_LIST_URL=http://vc-revocation:8003
-      - DID_RESOLVER_URL=http://did-resolver:8002
-    depends_on:
-      - did-resolver
-      - vc-revocation
-    networks:
-      - platform-network
+      - PORT=8001
+      - DID_REGISTRY_URL=http://did-registry:8000
 
-  did-resolver:
-    image: didoneworld/did-resolver:latest
+  wallet:
     build:
-      context: ./repos/verifiable-credential
-      dockerfile: services/did-resolver/Dockerfile
-    ports:
-      - "8002:8002"
-    networks:
-      - platform-network
-
-  vc-revocation:
-    image: didoneworld/vc-revocation:latest
-    build:
-      context: ./repos/verifiable-credential
-      dockerfile: services/revocation-service/Dockerfile
-    ports:
-      - "8003:8003"
-    volumes:
-      - status-lists:/app/data
-    networks:
-      - platform-network
-
-  # ID Wallet (from idwallet)
-  idwallet:
-    image: didoneworld/idwallet:latest
-    build:
-      context: ./repos/idwallet
+      context: ./api
+      dockerfile: wallet.Dockerfile
     ports:
       - "3000:3000"
-    environment:
-      - AGENT_DID_URL=http://agent-did:8000
-      - VC_VERIFIER_URL=http://vc-verifier:8004
-      - NODE_ENV=development
     depends_on:
-      - agent-did
-      - vc-verifier
-    networks:
-      - platform-network
-
-  # PostgreSQL Database
-  db:
-    image: postgres:15-alpine
-    environment:
-      - POSTGRES_DB=didoneworld
-      - POSTGRES_USER=didoneworld
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U didoneworld"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - platform-network
-
-  # Redis Cache
-  redis:
-    image: redis:7-alpine
-    networks:
-      - platform-network
-
-  # API Gateway
-  gateway:
-    image: nginx:alpine
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./certs:/etc/nginx/certs:ro
-    depends_on:
-      - agent-did
       - vc-issuer
-      - vc-verifier
-      - idwallet
-    networks:
-      - platform-network
+    environment:
+      - PORT=3000
+      - VC_VERIFIER_URL=http://vc-issuer:8001
+
+  admin-ui:
+    image: node:20-alpine
+    working_dir: /app
+    command: npx serve ui/out -l 3000
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./ui/out:/app:ro
 
 volumes:
   postgres-data:
-  status-lists:
 
 networks:
   platform-network:
