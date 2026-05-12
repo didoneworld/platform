@@ -4,7 +4,16 @@
   background: #0a0a0a;
   color: #fff;
 }
-.container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+.layout { display: flex; min-height: 100vh; }
+.sidebar { width: 260px; border-right: 1px solid #222; padding: 1rem 0; position: fixed; height: 100vh; overflow-y: auto; }
+.sidebar-header { padding: 0 1.5rem 1rem; border-bottom: 1px solid #222; margin-bottom: 1rem; }
+.logo { font-size: 1.125rem; font-weight: 700; color: #fff; text-decoration: none; }
+.nav { display: flex; flex-direction: column; gap: 0.25rem; padding: 0 0.75rem; }
+.nav-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.625rem 0.75rem; border-radius: 0.5rem; color: #888; text-decoration: none; font-size: 0.875rem; }
+.nav-item:hover { background: #111; color: #fff; }
+.nav-icon { width: 1.25rem; text-align: center; }
+.main { flex: 1; margin-left: 260px; padding: 2rem; }
+.container { max-width: 1200px; margin: 0 auto; }
 header { border-bottom: 1px solid #222; padding: 1.5rem 0; }
 .header-content { display: flex; justify-content: space-between; align-items: center; }
 h1 { font-size: 1.5rem; font-weight: 700; margin: 0; }
@@ -32,3 +41,11 @@ h2 { font-size: 3rem; font-weight: 700; line-height: 1.1; }
 .btn-secondary { border: 1px solid #333; color: #fff; padding: 0.75rem 1.5rem; border-radius: 0.5rem; text-decoration: none; }
 footer { padding: 2rem; border-top: 1px solid #222; text-align: center; color: #666; }
 footer a { color: #666; }
+.page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+.page-title { font-size: 1.5rem; font-weight: 600; }
+.btn { background: #fff; color: #000; padding: 0.625rem 1rem; border-radius: 0.5rem; text-decoration: none; font-size: 0.875rem; font-weight: 500; border: none; cursor: pointer; }
+.table { width: 100%; border-collapse: collapse; }
+.table th { text-align: left; padding: 0.75rem 1rem; border-bottom: 1px solid #222; color: #666; font-weight: 500; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.table td { padding: 1rem; border-bottom: 1px solid #222; font-size: 0.875rem; }
+.table tr:hover { background: #111; }
+.empty { text-align: center; padding: 4rem; color: #666; }
