@@ -4,7 +4,7 @@ services:
   did-registry:
     image: node:20-alpine
     working_dir: /app
-    command: ["npx", "serve", "api", "-l", "8000"]
+    command: ["node", "api/index.js"]
     ports:
       - "8000:8000"
     volumes:
@@ -17,9 +17,11 @@ services:
   vc-issuer:
     image: node:20-alpine
     working_dir: /app
-    command: ["npx", "serve", "api/credentials", "-l", "8001"]
+    command: ["node", "api/credentials/index.js"]
     ports:
       - "8001:8001"
+    volumes:
+      - ./api:/app:ro
     environment:
       - PORT=8001
     networks:
@@ -28,9 +30,11 @@ services:
   wallet:
     image: node:20-alpine
     working_dir: /app
-    command: ["npx", "serve", "api", "-l", "3000"]
+    command: ["node", "api/wallet.js"]
     ports:
       - "3000:3000"
+    volumes:
+      - ./api:/app:ro
     environment:
       - PORT=3000
     networks:
